@@ -4,8 +4,7 @@
  - this framwork supporter .net fromwark and dotnet core.
  # How To Use
  - .net formwork
-   -  in Global file ,add：
-    **OpenAPIHelper.Init()**
+   - in Global file ,add： **OpenAPIHelper.Init()**
  - dotnetcore
     - in ConfigureServices(),add: **services.AddMvc().AddOpenAPI();**
  - for more detail, take a look at the demo in the code !
