@@ -4,10 +4,10 @@
  - this framwork supporter .net fromwark and dotnet core.
  # How To Use
  - .net formwork
-   - add this in Global 
-    **OpenAPIHelper.Init()**
+   -  in Global file ,add：
+    **OpenAPIHelper.Init()**
  - dotnetcore
-    - in ConfigureServices(),add  this code,**services.AddMvc().AddOpenAPI();**
+    - in ConfigureServices(),add: **services.AddMvc().AddOpenAPI();**
  - for more detail, take a look at the demo in the code !
     - the path in the code
       - .net framwork:http://{host}/mytest/quest/test
