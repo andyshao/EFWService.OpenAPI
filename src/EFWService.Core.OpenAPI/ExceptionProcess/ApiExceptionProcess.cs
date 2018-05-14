@@ -10,16 +10,16 @@ namespace EFWService.Core.OpenAPI.ExceptionProcess
         where RequestModelType : ApiRequestModelBase
         where ResponseModelType : ApiResponseModelBase
     {
-        public string Process(Func<RequestModelType, ApiResponseModelBase, Exception, string> getErrorContent, 
+        public string Process(Func<RequestModelType, ApiResponseModelBase, Exception, string> getErrorContent,
             Exception _ex, RequestModelType request, ApiLogEntity apiLogEntity)
         {
             ApiException ex = _ex as ApiException;
 
-            string content = getErrorContent(request, new ApiResponseModelBase()
-               {
-                   respCode = ex.ErrorCode,
-                   respMsg = ex.ErrorMessage
-               }, _ex);
+            var content = getErrorContent(request,new ApiResponseModelBase()
+            {
+                respCode = ex.ErrorCode,
+                respMsg = ex.ErrorMessage
+            }, _ex);
             return content;
         }
     }

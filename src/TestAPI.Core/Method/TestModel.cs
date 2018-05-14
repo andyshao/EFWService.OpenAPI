@@ -2,7 +2,7 @@
 
 namespace TestAPI.Core.Method
 {
-    public class TestModel : ApiRequestModelBase
+    public class TestModel : ApiRequestModelBase, IStructuredPost
     {
         public int Id { get; set; }
 

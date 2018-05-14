@@ -28,7 +28,7 @@ namespace EFWService.OpenAPI.Model
         /// <summary>
         /// 响应时间
         /// </summary>
-        public DateTime respTime { get { return DateTime.Now; } }
+        public string respTime { get { return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff"); } }
 
         public void HasResult(string respMsg = "获取数据成功")
         {

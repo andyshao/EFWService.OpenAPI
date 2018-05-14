@@ -2,6 +2,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using System;
+using System.Buffers;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Text;
 
 namespace TestAPI.Core
 {
@@ -9,10 +15,7 @@ namespace TestAPI.Core
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(option =>
-            {
-                //option.ValueProviderFactories.Init();
-            }).AddOpenAPI();
+            services.AddOpenAPI();
             //GlobalHost.Builder.Populate(services);
             //return new AutofacServiceProvider(GlobalHost.Container);
         }
@@ -23,17 +26,7 @@ namespace TestAPI.Core
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                   name: "TestQuery",
-                   template: "api/query/{action}",
-                   defaults: new { controller = "TestQuery", action = "Index", ResultType = "json" });
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=home}/{action=index}",
-                    defaults: new { ResultType = "json" });
-            });
+            app.UseOpenAPI();
         }
     }
 }

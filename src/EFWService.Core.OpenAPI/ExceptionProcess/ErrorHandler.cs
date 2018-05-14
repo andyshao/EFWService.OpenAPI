@@ -17,7 +17,7 @@ namespace EFWService.Core.OpenAPI.ExceptionProcess
             where ResponseModelType : ApiResponseModelBase
         {
             object exExd = string.Empty;
-            string content = string.Empty;
+            string content = null;
             if (ex is ApiException)
             {
                 exExd = (ex as ApiException).ErrorCode;

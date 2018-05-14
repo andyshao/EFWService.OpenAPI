@@ -9,7 +9,7 @@ namespace TestAPI.Method
         category: "Query",
         httpMethodType: HttpMethodType.POST,
         desc: "测试接口")]
-    //path:api/quest/test
+    //path:api/test/Query/SimpleTest
     public class SimpleTest : ApiMethodBase<TestModel, TestResponseModel>
     {
         public override TestResponseModel ExecuteLogic(TestModel request)

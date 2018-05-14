@@ -16,15 +16,15 @@ namespace EFWService.Core.OpenAPI.ExceptionProcess
         where RequestModelType : ApiRequestModelBase
         where ResponseModelType : ApiResponseModelBase
     {
-        public string Process(Func<RequestModelType, ApiResponseModelBase, Exception, string> getErrorContent, 
+        public string Process(Func<RequestModelType, ApiResponseModelBase, Exception, string> getErrorContent,
             Exception _ex, RequestModelType request, ApiLogEntity apiLogEntity)
         {
             string exceptionId = Guid.NewGuid().ToString().Replace("-", "").ToLower();
-            string content = getErrorContent(request, new ApiResponseModelBase()
-               {
-                   respCode = (int)ApiResultCode.SystemError,
-                   respMsg = string.Format("未知系统错误,异常跟踪ID[{0}]", exceptionId)
-               }, _ex);
+            var content = getErrorContent(request, new ApiResponseModelBase()
+            {
+                respCode = (int)ApiResultCode.SystemError,
+                respMsg = string.Format("未知系统错误,异常跟踪ID[{0}]", exceptionId)
+            }, _ex);
             apiLogEntity.Exception = _ex;
             apiLogEntity.ExceptionId = exceptionId;
             return content;

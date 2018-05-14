@@ -22,6 +22,10 @@ namespace EFWService.Core.OpenAPI.DynamicController
         {
             var list = GetControllerMeta();
             var ass = GetControllerAss(list);
+            if (ass == null)
+            {
+                return;
+            }
             //将该程序集注册
             builder.ConfigureApplicationPartManager(part =>
             {
@@ -70,13 +74,14 @@ using System.Diagnostics;
 
 namespace EFWService.Core.OpenAPI.DynamicControllers
 {{
-    public class {0}Controller : Controller
+    [Route(" + $"\"api/{controller.FirstOrDefault().Module.Trim()}/{controller.FirstOrDefault().Category.Trim()}/[action]\"" + ")]" +
+    @"public class {0}Controller : Controller
     {{
      ", controller.Key);
                 #region 构建Action
                 foreach (var c in controller)
                 {
-                    code.AppendFormat(@"public IActionResult {0}({1} requestModel)", c.MethodName, c.IApiRequestModelType.FullName);
+                    code.AppendFormat(@"public dynamic {0}({1} requestModel)", c.MethodName, c.IApiRequestModelType.FullName);
                     code.AppendFormat(@"
         {{
             var method = new {0}();
@@ -129,7 +134,7 @@ namespace EFWService.Core.OpenAPI.DynamicControllers
                             MethodName = methodTrueName,
                             TypeName = type.FullName,
                             MethodType = type,
-                            Controller = string.Format("{0}{1}", APIMethodDesc.Module, APIMethodDesc.Category),
+                            Controller = string.Format("{0}_{1}", APIMethodDesc.Module, APIMethodDesc.Category),
                             FullTypeName = type.FullName + "," + type.Assembly.FullName.Split(',')[0],
                         };
                         obj.FullTypeNameSHA1 = SHAEncryption.Encrypt(obj.FullTypeName);

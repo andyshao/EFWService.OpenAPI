@@ -13,16 +13,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EFWService.Core.OpenAPI
 {
+    /// <summary>
+    /// API基类
+    /// </summary>
+    /// <typeparam name="RequestModelType"></typeparam>
+    /// <typeparam name="ResponseModelType"></typeparam>
     public abstract partial class ApiMethodBase<RequestModelType, ResponseModelType>
         where RequestModelType : ApiRequestModelBase
         where ResponseModelType : ApiResponseModelBase
     {
-        public IOutputProcessor OutputProcessor { get; private set; }
-
         private string postData = null;
+        private IOutputProcessor OutputProcessor;
         public string PostData
         {
             get
@@ -53,27 +58,24 @@ namespace EFWService.Core.OpenAPI
                 return postData;
             }
         }
+        private string content = string.Empty;
         /// <summary>
         /// 执行接口
         /// </summary>
         /// <returns></returns>
-        public IActionResult Execute(RequestModelType request)
+        public string Execute(RequestModelType request)
         {
-            //返回内容
-            string content = string.Empty;
             ResponseModelType responseModel = null;
             try
             {
                 ExecuteBegin();
                 BeginLog(apiLogEntity, request);
+                //选择输出
+                SwitchOutputProcessor(request);
                 //执行验证器
                 Verify(request);
                 //post请求需要进行数据解析，默认进行json解析
                 StructuredPostDataProcess(ref request);
-                //自定义ResultType
-                SwitchResultType(request);
-                //选择内容输出器
-                SwitchOutputProcessor(request);
                 //参数验证
                 DoRequestParamsCheck(request);
                 //执行业务逻辑
@@ -83,7 +85,7 @@ namespace EFWService.Core.OpenAPI
                     throw new ApiException(ApiResultCode.ResponseNull) { ErrorMessage = "执行结果返回为空" };
                 }
                 content = CustomOutputFun(request, responseModel);
-                //自定义内容输出
+                ////自定义内容输出
                 if (content == NoCustomOutputFun)
                 {
                     content = GetOutPutContent(responseModel, request);
@@ -95,12 +97,12 @@ namespace EFWService.Core.OpenAPI
                 content = ErrorHandler.Process<RequestModelType, ResponseModelType>(GetErrorContent, ex, request, apiLogEntity, apiMethodMetaInfo);
             }
             ExecuteEnd();
-            apiLogEntity.RespContent = content;
-            apiLogEntity.ElapsedMilliseconds = Stopwatch.ElapsedMilliseconds;
             _EndLog(apiLogEntity, request, responseModel);
-            SaveLog(apiLogEntity);
-            return new ContentResult() { Content = content, ContentType = GetContentType(request), StatusCode = 200 };
+            HttpResponse.ContentType = GetContentType(request);
+            return content;
+            // return new ContentResult() { Content = content, ContentType = GetContentType(request), StatusCode = 200 };
         }
+
         /// <summary>
         /// 参数合法性检查
         /// </summary>
@@ -212,7 +214,6 @@ namespace EFWService.Core.OpenAPI
                 {
                     apiLogEntity.SubcategoryName = this.ApiMethodMetaInfo.MethodName;
                 }
-
                 apiLogEntity.RequestURL = HttpRequest.Path;
                 apiLogEntity.HttpMethod = HttpRequest.Method;
                 WebBaseUtil.ApiLogger.Log(apiLogEntity);
@@ -246,7 +247,6 @@ namespace EFWService.Core.OpenAPI
         /// <param name="request"></param>
         private void SwitchOutputProcessor(RequestModelType request)
         {
-
             if (outPrDict.ContainsKey(request.ResultType))
             {
                 OutputProcessor = outPrDict[request.ResultType];
@@ -256,6 +256,8 @@ namespace EFWService.Core.OpenAPI
                 OutputProcessor = outPrDict.FirstOrDefault().Value;
             }
         }
+
+
         /// <summary>
         /// 输出参数类型
         /// </summary>
@@ -301,15 +303,19 @@ namespace EFWService.Core.OpenAPI
         {
             foreach (var auth in WebBaseUtil.ApiExecuteAroundPipeline)
             {
-                auth.After(new DefaultApiExecuteAround.AfterParam()
+                try
                 {
-                    HttpRequest = this.HttpRequest,
-                    HttpResponse = this.HttpResponse,
-                    Stopwatch = this.Stopwatch,
-                    ApiMethodMetaInfo = this.ApiMethodMetaInfo,
-                    HasError = apiLogEntity.Exception != null,
-                    LogType = apiLogEntity.LogType
-                });
+                    auth.After(new DefaultApiExecuteAround.AfterParam()
+                    {
+                        HttpRequest = this.HttpRequest,
+                        HttpResponse = this.HttpResponse,
+                        Stopwatch = this.Stopwatch,
+                        ApiMethodMetaInfo = this.ApiMethodMetaInfo,
+                        HasError = apiLogEntity.Exception != null,
+                        LogType = apiLogEntity.LogType
+                    });
+                }
+                catch { }
             }
         }
 
@@ -337,35 +343,21 @@ namespace EFWService.Core.OpenAPI
         /// <returns></returns>
         private string GetErrorContent(RequestModelType request, ApiResponseModelBase responseModel, Exception ex)
         {
-            string custError = GetCustomErrorOutput(request, responseModel, ex);
+            var custError = GetCustomErrorOutput(request, responseModel, ex);
             if (custError != NoCustomOutputFun)
             {
                 return custError;
             }
-            //responseModel.respTime = DateTime.Now;
             var resp = GetUnSuccessResponseModel(responseModel);
-            if (OutputProcessor == null)
-            {
-                SwitchOutputProcessor(request);
-            }
-            if (resp == null)
-            {
-                return OutputProcessor.OutPut<ApiResponseModelBase>(responseModel);
-            }
-            else
+            if (resp != null)
             {
                 return OutputProcessor.OutPut<ResponseModelType>(resp);
             }
+            return OutputProcessor.OutPut<ApiResponseModelBase>(responseModel);
         }
-        /// <summary>
-        /// 执行接口序列化
-        /// </summary>
-        /// <param name="responseModel"></param>
-        /// <param name="requestModel"></param>
-        /// <returns></returns>
+
         private string GetOutPutContent(ResponseModelType responseModel, RequestModelType requestModel)
         {
-            //responseModel.respTime = DateTime.Now;
             return OutputProcessor.OutPut<ResponseModelType>(responseModel);
         }
         /// <summary>
@@ -392,9 +384,10 @@ namespace EFWService.Core.OpenAPI
         /// <param name="responseModel"></param>
         private void _EndLog(ApiLogEntity apiLogEntity, RequestModelType request, ResponseModelType responseModel)
         {
-            apiLogEntity.ElapsedMilliseconds = Stopwatch.ElapsedMilliseconds;
             try
             {
+                apiLogEntity.ElapsedMilliseconds = Stopwatch.ElapsedMilliseconds;
+                apiLogEntity.RespContent = content;
                 if (responseModel == null)
                 {
                     apiLogEntity.AddLogMessage("responseModel为空,EndLog将不被调用");
@@ -412,6 +405,7 @@ namespace EFWService.Core.OpenAPI
             {
                 apiLogEntity.AddLogMessage("调用EndLog时出现异常");
             }
+            SaveLog(apiLogEntity);
         }
         /// <summary>
         /// 开始自定义日志
