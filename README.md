@@ -1,5 +1,5 @@
 ## EFWService OpenAPI
-**EFWService OpenAPI** is a Framwork based on Microsoft MVC,and design to solve the problem that a controller.cs file contains a lot of actions. It's has the same performace as well as MVC.
+**EFWService OpenAPI** is a Framwork based on Microsoft MVC,and design to solve the problem that a controller.cs file contains a lot of actions. It has the same performace as MVC.
 
 Author: cgymy  
 
