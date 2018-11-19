@@ -18,14 +18,32 @@ namespace EFWService.OpenAPI.DynamicController.AutofacExt
 
         public object GetService(Type serviceType)
         {
-            if (container.IsRegistered(serviceType))
-                return container.Resolve(serviceType);
-            return null;
+            using (var scope = container.BeginLifetimeScope())
+            {
+                if (scope.IsRegistered(serviceType))
+                    return scope.Resolve(serviceType);
+                return null;
+            }
         }
 
         internal IEnumerable<T> GetTypeServices<T>(T serviceType)
         {
-            return container.Resolve<IEnumerable<T>>();
+            using (var scope = container.BeginLifetimeScope())
+            {
+                return scope.Resolve<IEnumerable<T>>();
+            }
+        }
+
+        internal T GetServiceByKey<T>(string key)
+        {
+            using (var scope = container.BeginLifetimeScope())
+            {
+                if (scope.IsRegisteredWithKey<T>(key))
+                {
+                    return scope.ResolveKeyed<T>(key);
+                }
+                return default(T);
+            }
         }
 
         public IEnumerable<object> GetServices(Type serviceType)

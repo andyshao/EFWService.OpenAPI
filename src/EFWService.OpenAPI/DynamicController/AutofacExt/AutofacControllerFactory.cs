@@ -1,6 +1,4 @@
-﻿using Autofac;
-using EFWService.OpenAPI.Utils;
-using System;
+﻿using System;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -19,11 +17,8 @@ namespace EFWService.OpenAPI.DynamicController.AutofacExt
             try
             {
                 string key = string.Format(ControllerKey + "Controller", requestContext.RouteData.Values["controller"]).ToLower();
-                if (AutofacEx.Container.IsRegisteredWithKey<IController>(key))
-                {
-                    return AutofacEx.Container.ResolveKeyed<IController>(key);
-                }
-                return null;
+                var resolver = DependencyResolver.Current as AutofacDependencyResolver;
+                return resolver.GetServiceByKey<IController>(key);
             }
             catch (Exception)
             {

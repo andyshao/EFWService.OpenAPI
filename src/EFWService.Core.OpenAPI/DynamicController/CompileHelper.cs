@@ -19,7 +19,6 @@ namespace EFWService.Core.OpenAPI.DynamicController
             {
                 referenceAssList.Add(item.Location);
             }
-
         }
 
         public static Assembly CompileAssembly(string[] code)

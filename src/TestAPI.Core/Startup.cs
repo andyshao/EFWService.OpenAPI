@@ -16,8 +16,6 @@ namespace TestAPI.Core
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOpenAPI();
-            //GlobalHost.Builder.Populate(services);
-            //return new AutofacServiceProvider(GlobalHost.Container);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -49,7 +49,6 @@ namespace EFWService.Core.OpenAPI.DynamicController
         {
             IEnumerable<Assembly> assList = null;
             assList = AssemblyLocator.GetBinFolderAssemblies().Where(x => x.FullName.ToLower().Contains("api")).AsEnumerable();
-            //assList = AssemblyLocator.GetBinFolderAssemblies().AsEnumerable();
             if (assList == null || assList.Count() <= 0)
             {
                 assList = AssemblyLocator.GetBinFolderAssemblies().AsEnumerable();
