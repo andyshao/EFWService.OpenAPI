@@ -8,7 +8,7 @@ Contact us: cgyqu2639@163.com
 #### Features
 
 * Quick to create a api
-* Quick test throw test tool
+* Quick test via test tool
 * Integrated authentication
 
 ### Build
@@ -21,21 +21,52 @@ Contact us: cgyqu2639@163.com
  *  `DotNetCore` NETSTANDARD>=2.0
 
  ### Useage
- #### .NETFramwork
+ #### Config
+ ##### .NETFramwork
  In Global file ,add  
     
 ```C#
       OpenAPIHelper.Init();
 ```
-#### DotnetCore
+##### DotnetCore
  In ConfigureServices(),add
 ```
      services.AddMvc().AddOpenAPI();
 ```
+#### API Definition
+1. Create an assembly with the name ends with **API**
+2. Create a class with the name ends with **Method**
+3. Class Use `ApiMethodDescAttibute`
+
+For example:
+
+```
+[ApiMethodDesc(module: APIModule.Test,
+        category: APICategory.Query,
+        httpMethodType: HttpMethodType.ALL,
+        desc: "testapi")]
+public class TestMethod : ApiMethodBase<TestModel, NormalResponseModel>
+{
+    public override NormalResponseModel ExecuteLogic(TestModel request)
+    {
+        NormalResponseModel response = new NormalResponseModel();
+        response.HasResult();
+        response.result = request;
+        return response;
+    }
+}
+```
+##### ApiMethodDescAttibute Property
+PropertyName |  Type| Desc
+---|---|--
+Mudule | 	string |	Mudule
+Category| 	string | Category
+HttpMethodType| 	enum| HttpMethod type: GET POST ALL
+Desc	|String	| Api desc
+MethodName|	String|If not specified ,use name with classname remove `Method`
+
+#### API Path
+ > http://{host}/{Module}/{Category}/{MethodName}
 
 **For more detail, view the demo!**
 
-#### Demo Path
-* .NetFramwork:http://{host}/mytest/quest/test
-- DotNetCore:http://{host}/api/quest/test
-      
