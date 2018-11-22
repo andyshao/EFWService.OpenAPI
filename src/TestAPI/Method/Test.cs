@@ -10,7 +10,7 @@ namespace TestAPI.Method
         httpMethodType: HttpMethodType.GET,
         desc: "测试接口")]
     //path :mytest/quest/test
-    public class Test : ApiMethodBase<ApiRequestModelBase, NormalResponseModel>
+    public class TestMethod : ApiMethodBase<ApiRequestModelBase, NormalResponseModel>
     {
         public override NormalResponseModel ExecuteLogic(ApiRequestModelBase request)
         {

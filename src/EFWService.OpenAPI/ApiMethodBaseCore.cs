@@ -215,10 +215,6 @@ namespace EFWService.OpenAPI
                     request = JsonConvertExd.Deserialize<RequestModelType>(PostData);
                 }
             }
-            catch (ApiException)
-            {
-                throw;
-            }
             catch (Exception ex)
             {
                 throw new ApiException(ApiResultCode.ParamsError) { ErrorMessage = "提交数据存在异常:" + ex.Message };
@@ -263,17 +259,9 @@ namespace EFWService.OpenAPI
 
                 apiLogEntity.RequestURL = HttpRequest.RawUrl;
                 apiLogEntity.HttpMethod = HttpRequest.HttpMethod;
+                apiLogEntity.LogFinish();
                 WebBaseUtil.ApiLogger.Log(apiLogEntity);
             }
-        }
-        /// <summary>
-        /// 日志过滤（手机号，身份证，邮箱）
-        /// </summary>
-        /// <param name="input"></param>
-        /// <returns></returns>
-        public virtual string LogFilter(string input)
-        {
-            return input;
         }
         /// <summary>
         /// 接口执行前验证

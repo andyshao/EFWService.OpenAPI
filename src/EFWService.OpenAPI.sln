@@ -15,7 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFWService.OpenAPI", "EFWSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFWService.Core.OpenAPI", "EFWService.Core.OpenAPI\EFWService.Core.OpenAPI.csproj", "{BC76B911-FC7E-4352-A268-23F29A739DFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFWService.Core.WebAPI.OpenAPI", "EFWService.Core.WebAPI.OpenAPI\EFWService.Core.WebAPI.OpenAPI.csproj", "{0EBAD970-573F-42F9-B549-754BB945535C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFWService.Core.WebAPI.OpenAPI", "EFWService.Core.WebAPI.OpenAPI\EFWService.Core.WebAPI.OpenAPI.csproj", "{0EBAD970-573F-42F9-B549-754BB945535C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFWService.OpenAPI.Logger", "EFWService.OpenAPI.Logger\EFWService.OpenAPI.Logger.csproj", "{2F363954-9975-48D5-BC0B-732FFA08ADC0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{0EBAD970-573F-42F9-B549-754BB945535C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EBAD970-573F-42F9-B549-754BB945535C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EBAD970-573F-42F9-B549-754BB945535C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F363954-9975-48D5-BC0B-732FFA08ADC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F363954-9975-48D5-BC0B-732FFA08ADC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F363954-9975-48D5-BC0B-732FFA08ADC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F363954-9975-48D5-BC0B-732FFA08ADC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

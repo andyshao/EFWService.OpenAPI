@@ -17,18 +17,18 @@ namespace EFWService.OpenAPI.DynamicController
         /// <summary>
         /// 初始化
         /// </summary>
-        /// <param name="isStandController">是否加载正常conroller</param>
         public static void Initialize()
         {
             var list = GetControllerMeta();
             var ass = GetControllerAss(list);
+            ContainerBuilder builder = new ContainerBuilder();
             foreach (var type in ass.GetTypes())
             {
-                AutofacEx.Builder.RegisterType(type).Keyed<IController>(AutofacExt.AutofacControllerFactory.CreateControllerKey(type.Name));
+                builder.RegisterType(type).Keyed<IController>(AutofacExt.AutofacControllerFactory.CreateControllerKey(type.Name));
             }
-            AutofacEx.Builder.RegisterType<AutofacControllerFactory>().As<IControllerFactory>();
-            AutofacEx.Build();
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(AutofacEx.Container));
+            builder.RegisterType<AutofacControllerFactory>().As<IControllerFactory>();
+            var container = builder.Build();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
         }
 
         /// <summary>
@@ -141,20 +141,25 @@ namespace EFWService.OpenAPI.$TYPE$Controllers
                         obj.FullTypeNameSHA1 = SHAEncryption.Encrypt(obj.FullTypeName);
                         obj.Fap = $"{APIMethodDesc.Module}.{APIMethodDesc.Category}.{obj.MethodName}";
                         //返回泛型基类中的reqeuest类
-                        foreach (var btgaInt in type.BaseType.GetGenericArguments())
+                        foreach (var genericType in type.BaseType.GetGenericArguments())
                         {
-                            var typeNow = btgaInt;
-                            for (int i = 0; i < 10; i++)
+                            var typeNow = genericType;
+                            while (true)
                             {
                                 if (typeNow != null && typeNow == typeof(ApiRequestModelBase))
                                 {
-                                    obj.IApiRequestModelType = btgaInt;
+                                    obj.IApiRequestModelType = genericType;
+                                    break;
                                 }
                                 else
                                 {
                                     if (typeNow != null)
                                     {
                                         typeNow = typeNow.BaseType;
+                                    }
+                                    else
+                                    {
+                                        break;
                                     }
                                 }
                             }
@@ -168,10 +173,6 @@ namespace EFWService.OpenAPI.$TYPE$Controllers
                             if (WebBaseUtil.ApiMethodMetaCache == null)
                             {
                                 throw new NullReferenceException("WebBaseUtil.ApiMethodMetaCache");
-                            }
-                            if (obj == null)
-                            {
-                                throw new NullReferenceException("obj");
                             }
                             if (obj.TypeName == null)
                             {

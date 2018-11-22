@@ -7,7 +7,7 @@ namespace EFWService.OpenAPI.Utils
     /// <summary>
     /// sha1加密
     /// </summary>
-    public class SHAEncryption
+    internal class SHAEncryption
     {
         /// <summary>
         /// 加密

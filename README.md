@@ -1,20 +1,41 @@
-## EFWService.OpenAPI
+## EFWService OpenAPI
+**EFWService OpenAPI** is a Framwork based on Microsoft MVC,and design to solve the problem that a controller.cs file contains a lot of actions. It has the same performace as MVC.
 
-### INTRO
-This framwork based on **MVC**,the goal is to resolve a `xxxController. cs` file that contains too many actions. So this Framework is named
-     **Elegant Framework Service**.\
-### Support
- 1. `.NetFromwark` >= 4.5.1
- 2.  `.NetCore`. >=2.0
+Author: cgymy  
 
-### How To Use
+Contact us: cgyqu2639@163.com
 
-#### .NetFormwork
-In Global file ,add  
-  ```OpenAPIHelper.Init()```
+#### Features
+
+* Quick to create a api
+* Quick test throw test tool
+* Integrated authentication
+
+### Build
+
+* Open with vs2017
+* DotNetCore Version >=2.1
+
+ ### Support
+ * `.NetFromwark` >=4.5
+ *  `DotNetCore` NETSTANDARD>=2.0
+
+ ### Useage
+ #### .NETFramwork
+ In Global file ,add  
+    
+```C#
+      OpenAPIHelper.Init();
+```
 #### DotnetCore
-  ```services.AddMvc().AddOpenAPI()```
+ In ConfigureServices(),add
+```
+     services.AddMvc().AddOpenAPI();
+```
 
-#### For more detail,Check out the demo in the code!
+**For more detail, view the demo!**
 
+#### Demo Path
+* .NetFramwork:http://{host}/mytest/quest/test
+- DotNetCore:http://{host}/api/quest/test
       

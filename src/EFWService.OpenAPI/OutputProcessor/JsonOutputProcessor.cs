@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using EFWService.OpenAPI.OutputProcessor;
 using EFWService.OpenAPI.Utils;
 
 namespace EFWService.OpenAPI.OutputProcessor
