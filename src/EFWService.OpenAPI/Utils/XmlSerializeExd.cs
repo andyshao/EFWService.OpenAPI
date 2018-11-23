@@ -1,22 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
-using System.IO;
-using System.Xml.Linq;
+using System.Threading.Tasks;
 using System.Xml;
-using System.Runtime.Serialization;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 
-namespace EFWService.Core.OpenAPI.Exs
+namespace EFWService.OpenAPI.Utils
 {
-    public static class XmlSerializeEx
+    /// <summary>
+    /// xml序列化
+    /// </summary>
+    public static class XmlSerializeExd
     {
-        public static string CustomXmlSerialize(this object response, string[] removeNodes = null,
-            bool removeAllAttributes = false,
-            bool removeXsd = false,
-            bool removeXsi = false,
-             string head = "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
+        /// <summary>
+        /// 自定义xml序列化
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="removeAllAttributes">移除属性</param>
+        /// <param name="removeXsd">移除xsd属性</param>
+        /// <param name="removeXsi">移除xsi</param>
+        /// <param name="removeNodes">移除节点列表</param>
+        /// <param name="head"></param>
+        /// <returns></returns>
+        public static string CustomXmlSerialize(this object response, string[] removeNodes = null, bool removeAllAttributes = false,
+          bool removeXsd = false, bool removeXsi = false, string head = "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
         {
             string xml = string.Empty;
             XmlSerializer ser = new XmlSerializer(response.GetType());
@@ -37,7 +47,7 @@ namespace EFWService.Core.OpenAPI.Exs
                 xe.RemoveAttributes();
             }
 
-            RemoveXsXXX(removeXsd, removeXsi, xe);
+            RemoveXsdXsi(removeXsd, removeXsi, xe);
 
             if (removeNodes != null && removeNodes.Length > 0)
             {
@@ -49,7 +59,6 @@ namespace EFWService.Core.OpenAPI.Exs
                     {
                         removeList.Add(item);
                     }
-
                 }
                 foreach (var item in removeList)
                 {
@@ -59,7 +68,7 @@ namespace EFWService.Core.OpenAPI.Exs
             return head + System.Environment.NewLine + xe.ToString();
         }
 
-        private static void RemoveXsXXX(bool removeXsd, bool removeXsi, XElement xe)
+        private static void RemoveXsdXsi(bool removeXsd, bool removeXsi, XElement xe)
         {
             List<XAttribute> rList = new List<XAttribute>();
             foreach (var item in xe.Attributes())
@@ -78,54 +87,12 @@ namespace EFWService.Core.OpenAPI.Exs
                 item.Remove();
             }
         }
-
-        public static string CustomXmlSerialize(this object response, bool removeAttributes,
-            params string[] removeNode)
-        {
-            string xml = string.Empty;
-            XmlSerializer ser = new XmlSerializer(response.GetType());
-
-            using (MemoryStream stream = new MemoryStream(100))
-            {
-                ser.Serialize(stream, response);
-                stream.Position = 0;
-                using (StreamReader reader = new StreamReader(stream, Encoding.UTF8))
-                {
-                    xml = reader.ReadToEnd();
-                }
-            }
-
-            var xe = XElement.Parse(xml);
-            if (removeAttributes)
-            {
-                xe.RemoveAttributes();
-            }
-
-            foreach (var item in xe.Attributes())
-            {
-                Console.WriteLine(item);
-            }
-
-            if (removeNode != null && removeNode.Length > 0)
-            {
-                List<XElement> removeList = new List<XElement>();
-
-                foreach (var item in xe.Elements())
-                {
-                    if (removeNode.Contains(item.Name.LocalName))
-                    {
-                        removeList.Add(item);
-                    }
-
-                }
-                foreach (var item in removeList)
-                {
-                    item.Remove();
-                }
-            }
-            return "<?xml version=\"1.0\" encoding=\"utf-8\"?>" + System.Environment.NewLine + xe.ToString();
-        }
-
+        /// <summary>
+        /// xml反序列化
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static T XmlDeserialize<T>(this string s)
         {
             XmlDocument xdoc = new XmlDocument();

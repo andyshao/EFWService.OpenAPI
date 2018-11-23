@@ -24,13 +24,24 @@ namespace EFWService.OpenAPI
             }
         }
         /// <summary>
-        /// api执行管道，插入执行逻辑
+        /// 执行管道
         /// </summary>
         public static List<DefaultApiExecuteAround> ApiPipeline
         {
             get
             {
                 return WebBaseUtil.ApiExecuteAroundPipeline;
+            }
+        }
+
+        /// <summary>
+        /// 验证管道
+        /// </summary>
+        public static List<Authentication.Authentication> AuthPipeline
+        {
+            get
+            {
+                return WebBaseUtil.AuthenticationPipeline;
             }
         }
 

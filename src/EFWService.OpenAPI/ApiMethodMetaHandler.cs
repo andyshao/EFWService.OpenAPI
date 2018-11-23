@@ -8,7 +8,7 @@ using TCWLService.BaseService.CommonLib;
 
 namespace EFWService.OpenAPI
 {
-    public class ApiMethodMetaCacheHandler : IHttpHandler
+    public class ApiMethodMetaHandler : IHttpHandler
     {
         public bool IsReusable
         {

@@ -80,5 +80,19 @@ namespace EFWService.OpenAPI
             {"json",new JsonOutputProcessor()},
             {"xml",new XmlOutputProcessor()}
         };
+        /// <summary>
+        /// 返回接口排除字段字典
+        /// </summary>
+        private ResultIgnoreSource<ResponseModelType> resultIgnoreSource = new ResultIgnoreSource<ResponseModelType>();
+        /// <summary>
+        /// 返回结果排除字段列表
+        /// </summary>
+        public List<string> IgnoreList
+        {
+            get
+            {
+                return resultIgnoreSource.IgnoreList;
+            }
+        }
     }
 }

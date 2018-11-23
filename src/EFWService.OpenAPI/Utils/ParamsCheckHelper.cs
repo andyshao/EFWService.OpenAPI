@@ -15,10 +15,21 @@ namespace EFWService.OpenAPI.Utils
     {
         private List<RequestParamsCheckResult> checkResultList = new List<RequestParamsCheckResult>();
         private List<CheckResultFuns> checkResultFunsList = new List<CheckResultFuns>();
+        private Action next = null;
 
         public ParamsCheckHelper Check(Func<bool> checkFunc, string errorMessage)
         {
             checkResultFunsList.Add(new CheckResultFuns() { Funs = checkFunc, ErrorMessage = errorMessage });
+            return this;
+        }
+        /// <summary>
+        /// 检查完参数后执行，保留最后一次调用Action
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public ParamsCheckHelper Then(Action action)
+        {
+            this.next = action;
             return this;
         }
 
@@ -30,6 +41,10 @@ namespace EFWService.OpenAPI.Utils
                 {
                     return new RequestParamsCheckResult() { Success = false, ErrorMessage = item.ErrorMessage };
                 }
+            }
+            if (next != null)
+            {
+                next();
             }
             return new RequestParamsCheckResult() { Success = true };
         }

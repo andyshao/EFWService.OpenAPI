@@ -21,7 +21,7 @@ namespace EFWService.OpenAPI.Utils
         /// <summary>
         /// api日志记录器
         /// </summary>
-        public static IApiLogger<ApiLogEntity> ApiLogger { get; set; }
+        internal static IApiLogger<ApiLogEntity> ApiLogger { get; set; }
         private static readonly Dictionary<string, ApiMethodMeta> apiMethodMetaCache = new Dictionary<string, ApiMethodMeta>();
         //接口元数据
         internal static Dictionary<string, ApiMethodMeta> ApiMethodMetaCache

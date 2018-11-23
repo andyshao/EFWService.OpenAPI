@@ -7,6 +7,6 @@ namespace EFWService.OpenAPI.OutputProcessor
 {
     public interface IOutputProcessor
     {
-        string OutPut<RequestModelType>(RequestModelType request);
+        string OutPut<RequestModelType>(RequestModelType request, List<string> ingoreList);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace EFWService.OpenAPI.Logger
 {
@@ -16,36 +15,44 @@ namespace EFWService.OpenAPI.Logger
         }
         public string Message { get; set; }
         public DateTime LogTime { get; private set; }
-
         public int LogIndex { get; set; }
 
         public override string ToString()
         {
-            return string.Format("idx:{2} t:{0} msg:{1}|", LogTime.ToString("yyyy-MM-dd HH:mm:ss"), Message, LogIndex);
+            return string.Format("{0} {1} {2}", "  ", Message, "\n");
         }
     }
+    /// <summary>
+    /// 日志类型
+    /// </summary>
     public enum LogType
     {
+        /// <summary>
+        /// info
+        /// </summary>
         Info = 1,
+        /// <summary>
+        /// Warning
+        /// </summary>
         Warning = 2,
-        Debug = 3
+        /// <summary>
+        /// 调试日志
+        /// </summary>
+        Debug = 3,
+        /// <summary>
+        /// 异常
+        /// </summary>
+        Error = 4
     }
+    /// <summary>
+    /// 日志实体
+    /// </summary>
     public class ApiLogEntity
     {
-        public ApiLogEntity()
-        {
-            LogTime = DateTime.Now;
-            LogMessageItemList = new List<LogMessageItem>();
-            DisplayItems = new Dictionary<string, string>();
-        }
 
-        public DateTime LogTime { get; set; }
-        private List<LogMessageItem> LogMessageItemList { get; set; }
-
-        public object lockObj = new object();
-
+        private List<LogMessageItem> LogMessageItemList { get; set; } = new List<LogMessageItem>();
+        private static readonly object lockObj = new object();
         private int logIndex = 0;
-
         /// <summary>
         /// 模块
         /// </summary>
@@ -79,87 +86,98 @@ namespace EFWService.OpenAPI.Logger
         /// <summary>
         /// 显示杂项
         /// </summary>
-        public Dictionary<string, string> DisplayItems { get; set; }
+        public Dictionary<string, string> DisplayItems { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// 执行时间
         /// </summary>
         public long ElapsedMilliseconds { get; set; }
-
+        /// <summary>
+        /// 日志类型
+        /// </summary>
         public LogType LogType { get; set; }
-
+        /// <summary>
+        /// 请求地址
+        /// </summary>
         public string RequestURL { get; set; }
-
+        /// <summary>
+        /// 请求方式
+        /// </summary>
         public string HttpMethod { get; set; }
+        /// <summary>
+        /// 请求body
+        /// </summary>
         public string Params { get; set; }
+        /// <summary>
+        /// 异常
+        /// </summary>
         public Exception Exception { get; set; }
+        /// <summary>
+        /// 异常id
+        /// </summary>
         public string ExceptionId { get; set; }
+        /// <summary>
+        /// 返回数据
+        /// </summary>
         public string RespContent { get; set; }
+        /// <summary>
+        /// 请求ip列表
+        /// </summary>
         public List<string> ClientIPList { get; set; }
 
         /// <summary>
         /// 增加日志内容
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="_params"></param>
-        public void AddLogMessage(string message, params object[] _params)
+        public void AddLogMessage(string message)
         {
             lock (lockObj)
             {
                 logIndex++;
-                if (_params != null && _params.Length > 0)
-                {
-                    message = string.Format(message, _params);
-                }
                 LogMessageItemList.Add(new LogMessageItem() { Message = message, LogIndex = logIndex });
             }
         }
 
         private bool logFinished = false;
+        /// <summary>
+        /// 结束日志
+        /// </summary>
         public void LogFinish()
-        {
-            if (logFinished)
-            {
-                return;
-            }
-            if (DisplayItems == null)
-            {
-                DisplayItems = new Dictionary<string, string>();
-            }
-
-            DisplayItems.Add("Url", RequestURL);
-            DisplayItems.Add("Method", HttpMethod);
-            DisplayItems.Add("ES", ElapsedMilliseconds.ToString());
-            if (LogMessageItemList != null && LogMessageItemList.Count > 0)
-            {
-                DisplayItems.Add("Logs", string.Join(",", LogMessageItemList)?.TrimEnd('|') ?? "无");
-            }
-            if (ClientIPList != null)
-            {
-                DisplayItems.Add("CIP", string.Join(",", ClientIPList));
-            }
-            if (!string.IsNullOrWhiteSpace(Params))
-            {
-                Message += Environment.NewLine + $"请求参数:{Environment.NewLine}{Params}";
-            }
-            CutRespContent();
-            logFinished = true;
-        }
-        private void CutRespContent()
         {
             try
             {
-                int length = 2000;
-                if (RespContent.Length < length)
+                lock (lockObj)
                 {
-                    length = RespContent.Length;
+                    if (logFinished)
+                    {
+                        return;
+                    }
+                    DisplayItems.Add("Url", RequestURL);
+                    DisplayItems.Add("Method", HttpMethod);
+                    DisplayItems.Add("ES", ElapsedMilliseconds.ToString());
+                    if (ClientIPList != null)
+                    {
+                        DisplayItems.Add("CIP", string.Join(",", ClientIPList));
+                    }
+                    if (!string.IsNullOrWhiteSpace(Params))
+                    {
+                        Message += $"\n请求参数:\n  {Params}";
+                    }
+                    bool isNewLine = true;
+                    if (LogMessageItemList != null && LogMessageItemList.Count > 0)
+                    {
+                        isNewLine = false;
+                        Message += $"\n其他信息:\n{string.Join("", LogMessageItemList.OrderBy(x => x.LogIndex))}";
+                    }
+                    //if (RespContent.Length > 2000)
+                    //{
+                    //    RespContent = RespContent.Substring(0, 2000);
+                    //}
+                    Message += (isNewLine ? "\n" : string.Empty) + $"返回参数:\n  {RespContent}";
+                    logFinished = true;
                 }
-                RespContent = RespContent.Substring(0, length);
-                Message += Environment.NewLine + $"返回参数:{Environment.NewLine}{RespContent}";
             }
-            catch (Exception)
-            {
-            }
+            catch { }
         }
     }
 }

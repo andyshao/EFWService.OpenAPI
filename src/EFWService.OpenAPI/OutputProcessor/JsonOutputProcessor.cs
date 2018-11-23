@@ -8,9 +8,9 @@ namespace EFWService.OpenAPI.OutputProcessor
 {
     public class JsonOutputProcessor : IOutputProcessor
     {
-        public string OutPut<RequestModelType>(RequestModelType request)
+        public string OutPut<RequestModelType>(RequestModelType request, List<string> ingoreList)
         {
-            return JsonConvertExd.SerializeObject(request);
+            return JsonConvertExd.SerializeObjectWithIgnore(request, ingoreList);
         }
     }
 }

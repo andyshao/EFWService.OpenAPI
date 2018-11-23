@@ -12,19 +12,21 @@ namespace EFWService.OpenAPI.Logger
         {
             if (log.LogType == LogType.Warning)
             {
+                Console.WriteLine(log.ToString());
                 //TODO warnging log 
                 return;
             }
-
             if (log.LogType == LogType.Debug)
             {
-                //TODO debug log
+                Console.WriteLine(log.ToString());
+                return;
             }
             if (log.Exception != null)
             {
-                //TODO errro log
+                Console.WriteLine(log.ToString());
                 return;
             }
+            Console.WriteLine(log.ToString());
         }
     }
 }

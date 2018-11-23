@@ -32,21 +32,4 @@ namespace EFWService.OpenAPI
             return null;
         }
     }
-    /// <summary>
-    /// json 兼容处理
-    /// </summary>
-    public static class ProviderFactoryEx
-    {
-        public static void Init(this ValueProviderFactoryCollection valueProviderFactories)
-        {
-            valueProviderFactories.Clear();
-            valueProviderFactories.Add(new PostDataProviderFactory());
-            valueProviderFactories.Add(new ChildActionValueProviderFactory());
-            valueProviderFactories.Add(new FormValueProviderFactory());
-            valueProviderFactories.Add(new JsonValueProviderFactory());
-            valueProviderFactories.Add(new RouteDataValueProviderFactory());
-            valueProviderFactories.Add(new QueryStringValueProviderFactory());
-            valueProviderFactories.Add(new HttpFileCollectionValueProviderFactory());
-        }
-    }
 }

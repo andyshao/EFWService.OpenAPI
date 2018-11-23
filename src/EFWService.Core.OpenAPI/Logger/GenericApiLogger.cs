@@ -15,22 +15,21 @@ namespace EFWService.Core.OpenAPI.Logger
 
         public void Log(ApiLogEntity log)
         {
-            log.LogFinish();
-            if (log.Exception == null && CloesNotExceptionLogSwitch != null && CloesNotExceptionLogSwitch() == true)
+            try
             {
-                return;
+                if (log.LogType == LogType.Error)
+                {
+                    return;
+                }
+                if (log.LogType == LogType.Warning)
+                {
+                }
+                else if (log.LogType == LogType.Debug)
+                {
+                }
+               
             }
-            if (log.LogType == LogType.Warning)
-            {
-            }
-            if (log.LogType == LogType.Debug)
-            {
-            }
-            if (log.Exception != null)
-            {
-
-            }
-            else
+            catch (Exception ex)
             {
             }
         }

@@ -21,6 +21,7 @@ namespace EFWService.OpenAPI
         where ResponseModelType : ApiResponseModelBase
     {
         private string postData = null;
+        private static object syncLock = new object();
         /// <summary>
         /// /返回数据序列化容器
         /// </summary>
@@ -34,11 +35,6 @@ namespace EFWService.OpenAPI
             {
                 if (postData != null)
                 {
-                    return postData;
-                }
-                if (HttpRequest.ContentType.StartsWith("application/json", StringComparison.OrdinalIgnoreCase))
-                {
-                    postData = HttpRequest.RequestContext.HttpContext.Items["______jsonpost"].ToString();
                     return postData;
                 }
                 if (HttpRequest.InputStream != null)
@@ -63,6 +59,8 @@ namespace EFWService.OpenAPI
                 return postData;
             }
         }
+        //返回内容
+        private string content = string.Empty;
         /// <summary>
         /// 执行接口
         /// </summary>
@@ -71,10 +69,9 @@ namespace EFWService.OpenAPI
         {
             ExecuteBegin();
 
-            BeginLog(apiLogEntity, request);
+            _BeginLog(apiLogEntity, request);
 
-            //返回内容
-            string content = string.Empty;
+
             //自定义ResultType
             SwitchResultType(request);
 
@@ -92,6 +89,9 @@ namespace EFWService.OpenAPI
 
                 //参数验证
                 DoRequestParamsCheck(SuperContext.ModelState, request);
+
+                //结果排除
+                _IgnoreResult(resultIgnoreSource, request);
 
                 //执行业务逻辑
                 responseModel = ExecuteLogic(request);
@@ -112,16 +112,10 @@ namespace EFWService.OpenAPI
                 MonitorException(ex);
                 content = ErrorHandler.Process<RequestModelType, ResponseModelType>(GetErrorContent, ex, request, apiLogEntity, apiMethodMetaInfo);
             }
-            //结束
-            #region 日志处理
-            _EndLog(apiLogEntity, request, responseModel);
-            apiLogEntity.RespContent = content ?? string.Empty;
-            apiLogEntity.Params = postData ?? string.Empty;
-            SaveLog(apiLogEntity);
-            #endregion
 
+            _EndLog(apiLogEntity, request, responseModel);
             ExecuteEnd();
-            return new APIContentResult() { Content = content, ContentEncoding = Encoding.UTF8, ContentType = GetContentType(request) };
+            return new ContentResult() { Content = content, ContentEncoding = Encoding.UTF8, ContentType = GetContentType(request) };
         }
         /// <summary>
         /// 参数合法性检查
@@ -162,6 +156,34 @@ namespace EFWService.OpenAPI
                 throw new ApiException(ApiResultCode.ParamsError) { ErrorMessage = msg };
             }
         }
+
+        /// <summary>
+        /// 返回结果忽略
+        /// </summary>
+        /// <param name="ignoreSource"></param>
+        /// <param name="request"></param>
+        private void _IgnoreResult(ResultIgnoreSource<ResponseModelType> ignoreSource, RequestModelType request)
+        {
+            try
+            {
+                IgnoreResult(ignoreSource, request);
+            }
+            catch (Exception ex)
+            {
+                AddLog($"ignoreresult error,detail:{ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 返回结果过滤方法
+        /// </summary>
+        /// <param name="ignoreSource"></param>
+        /// <param name="request"></param>
+        public virtual void IgnoreResult(ResultIgnoreSource<ResponseModelType> ignoreSource, RequestModelType request)
+        {
+
+        }
+
         /// <summary>
         /// 执行接口业务逻辑
         /// </summary>
@@ -184,16 +206,6 @@ namespace EFWService.OpenAPI
         /// <param name="request"></param>
         public virtual void SwitchResultType(RequestModelType request)
         {
-        }
-        /// <summary>
-        /// 性能监控
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="response"></param>
-        /// <param name="stopwatch"></param>
-        public virtual void Monitor(RequestModelType request, ResponseModelType response, Stopwatch stopwatch)
-        {
-
         }
         /// <summary>
         /// 监控异常
@@ -220,49 +232,7 @@ namespace EFWService.OpenAPI
                 throw new ApiException(ApiResultCode.ParamsError) { ErrorMessage = "提交数据存在异常:" + ex.Message };
             }
         }
-        /// <summary>
-        /// 保存日志
-        /// </summary>
-        /// <param name="apiLogEntity"></param>
-        private void SaveLog(ApiLogEntity apiLogEntity)
-        {
-            //使用默认日记记录器
-            if (WebBaseUtil.ApiLogger == null)
-            {
-                WebBaseUtil.ApiLogger = new GenericLogger();
-            }
-            if (WebBaseUtil.ApiLogger != null)
-            {
-                //请求IP列表
-                apiLogEntity.ClientIPList = ClientIPList != null ? ClientIPList : new List<string> { };
-                //可以按照联盟id搜索
-                apiLogEntity.TextBoxFilterItem1 = apiLogEntity.TextBoxFilterItem1 ?? "";
-                //按请求服务器ip搜索
-                apiLogEntity.TextBoxFilterItem2 = ClientIPList != null && ClientIPList.Count > 0 ? ClientIPList[0] : "无";
-                //方法名作为日志信息
-                if (string.IsNullOrWhiteSpace(apiLogEntity.Message))
-                {
-                    apiLogEntity.Message = this.apiMethodMetaInfo.APIMethodDesc.Desc ?? "";
-                }
-                if (string.IsNullOrEmpty(apiLogEntity.ModuleName))
-                {
-                    apiLogEntity.ModuleName = this.ApiMethodMetaInfo.Module;
-                }
-                if (string.IsNullOrEmpty(apiLogEntity.CategoryName))
-                {
-                    apiLogEntity.CategoryName = this.ApiMethodMetaInfo.Category;
-                }
-                if (string.IsNullOrEmpty(apiLogEntity.SubcategoryName))
-                {
-                    apiLogEntity.SubcategoryName = this.ApiMethodMetaInfo.MethodName;
-                }
 
-                apiLogEntity.RequestURL = HttpRequest.RawUrl;
-                apiLogEntity.HttpMethod = HttpRequest.HttpMethod;
-                apiLogEntity.LogFinish();
-                WebBaseUtil.ApiLogger.Log(apiLogEntity);
-            }
-        }
         /// <summary>
         /// 接口执行前验证
         /// </summary>
@@ -384,11 +354,11 @@ namespace EFWService.OpenAPI
             var resp = GetUnSuccessResponseModel(responseModel);
             if (resp == null)
             {
-                return OutputProcessor.OutPut<ApiResponseModelBase>(responseModel);
+                return OutputProcessor.OutPut<ApiResponseModelBase>(responseModel, IgnoreList);
             }
             else
             {
-                return OutputProcessor.OutPut<ResponseModelType>(resp);
+                return OutputProcessor.OutPut<ResponseModelType>(resp, IgnoreList);
             }
         }
         /// <summary>
@@ -399,8 +369,52 @@ namespace EFWService.OpenAPI
         /// <returns></returns>
         private string GetOutPutContent(ResponseModelType responseModel, RequestModelType requestModel)
         {
-            //responseModel.respTime = DateTime.Now;
-            return OutputProcessor.OutPut<ResponseModelType>(responseModel);
+            return OutputProcessor.OutPut<ResponseModelType>(responseModel, IgnoreList);
+        }
+
+        /// <summary>
+        /// 开始自定义日志
+        /// </summary>
+        /// <param name="apiLog"></param>
+        /// <param name="request"></param>
+        public virtual void BeginLog(ApiLogEntity apiLog, RequestModelType request)
+        {
+
+        }
+        /// <summary>
+        /// 结束自定义日志
+        /// </summary>
+        /// <param name="apiLog"></param>
+        /// <param name="request"></param>
+        /// <param name="responseModel"></param>
+        public virtual void EndLog(ApiLogEntity apiLog, RequestModelType request, ResponseModelType responseModel)
+        {
+
+        }
+        /// <summary>
+        /// 新增日志
+        /// </summary>
+        /// <param name="message"></param>
+        public void AddLog(string message)
+        {
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                this.apiLogEntity.AddLogMessage(message);
+            }
+        }
+        /// <summary>
+        /// 新增额外信息
+        /// key不能重复
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="message"></param>
+        public void AddExtend(string key, string message)
+        {
+            if (!string.IsNullOrWhiteSpace(key) &&
+                !this.apiLogEntity.DisplayItems.ContainsKey(key))
+            {
+                this.apiLogEntity.DisplayItems.Add(key, message);
+            }
         }
         /// <summary>
         /// 开始日志
@@ -426,41 +440,50 @@ namespace EFWService.OpenAPI
         /// <param name="responseModel"></param>
         private void _EndLog(ApiLogEntity apiLogEntity, RequestModelType request, ResponseModelType responseModel)
         {
-            apiLogEntity.ElapsedMilliseconds = Stopwatch.ElapsedMilliseconds;
             try
             {
-                if (responseModel == null)
-                {
-                    apiLogEntity.AddLogMessage("responseModel为空,EndLog将不被调用");
-                }
-                else
-                {
-                    EndLog(apiLogEntity, request, responseModel);
-                }
+                apiLogEntity.ElapsedMilliseconds = Stopwatch.ElapsedMilliseconds;
+                apiLogEntity.RequestURL = HttpRequest.RawUrl;
+                apiLogEntity.HttpMethod = HttpRequest.HttpMethod;
+                EndLog(apiLogEntity, request, responseModel);
             }
-            catch (Exception)
+            catch
+            { }
+            if (responseModel == null)
             {
-                apiLogEntity.AddLogMessage("调用EndLog时出现异常");
+                apiLogEntity.AddLogMessage("responseModel为空,EndLog将不被调用");
             }
+            apiLogEntity.RespContent = content ?? string.Empty;
+            apiLogEntity.Params = postData ?? string.Empty;
+            apiLogEntity.ElapsedMilliseconds = Stopwatch.ElapsedMilliseconds;
+            apiLogEntity.ClientIPList = ClientIPList;
+            apiLogEntity.TextBoxFilterItem1 = apiLogEntity.TextBoxFilterItem1 ?? "";
+            apiLogEntity.TextBoxFilterItem2 = apiLogEntity.TextBoxFilterItem2 ?? string.Empty;
+            apiLogEntity.Message += $"{this.apiMethodMetaInfo.Fap}（{this.apiMethodMetaInfo.APIMethodDesc.Desc}）";
+            apiLogEntity.ModuleName = this.ApiMethodMetaInfo.Module;
+            apiLogEntity.CategoryName = this.ApiMethodMetaInfo.Category;
+            apiLogEntity.SubcategoryName = this.ApiMethodMetaInfo.MethodName;
+            apiLogEntity.LogFinish();
+            SaveLog(apiLogEntity);
         }
         /// <summary>
-        /// 开始自定义日志
+        /// 保存日志
         /// </summary>
-        /// <param name="apiLog"></param>
-        /// <param name="request"></param>
-        public virtual void BeginLog(ApiLogEntity apiLog, RequestModelType request)
+        /// <param name="apiLogEntity"></param>
+        private void SaveLog(ApiLogEntity apiLogEntity)
         {
-
-        }
-        /// <summary>
-        /// 结束自定义日志
-        /// </summary>
-        /// <param name="apiLog"></param>
-        /// <param name="request"></param>
-        /// <param name="responseModel"></param>
-        public virtual void EndLog(ApiLogEntity apiLog, RequestModelType request, ResponseModelType responseModel)
-        {
-
+            //使用默认日记记录器
+            if (WebBaseUtil.ApiLogger == null)
+            {
+                lock (syncLock)
+                {
+                    if (WebBaseUtil.ApiLogger == null)
+                    {
+                        WebBaseUtil.ApiLogger = new GenericLogger();
+                    }
+                }
+            }
+            WebBaseUtil.ApiLogger.Log(apiLogEntity);
         }
     }
 }

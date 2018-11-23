@@ -1,10 +1,33 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 
 namespace EFWService.OpenAPI.Utils
 {
     public static class JsonConvertExd
     {
+        /// <summary>
+        /// 序列化
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="ignoreList"></param>
+        /// <param name="isJsonProperty">是否使用JsonProperty定义的名称</param>
+        /// <param name="datetimeFormater">序列化的时间类型的格式</param>
+        /// <returns></returns>
+        public static string SerializeObjectWithIgnore(object value, List<string> ignoreList, bool isJsonProperty = true, string datetimeFormater = "yyyy-MM-dd HH:mm:ss.fff")
+        {
+            if (ignoreList == null || ignoreList.Count <= 0)
+            {
+                return SerializeObject(value, datetimeFormater);
+            }
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                ContractResolver = new JsonIgnoreContractResolver(ignoreList, isJsonProperty),
+                DateFormatString = datetimeFormater,
+                Formatting = Formatting.None
+            };
+            return JsonConvert.SerializeObject(value, settings);
+        }
         /// <summary>
         /// 序列化
         /// </summary>
