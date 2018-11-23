@@ -6,7 +6,9 @@ using System.IO;
 using EFWService.OpenAPI.DynamicController;
 using EFWService.OpenAPI.Authentication;
 using EFWService.OpenAPI.Logger;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("EFWService.OpenAPI.Register")]
 namespace EFWService.OpenAPI.Utils
 {
     /// <summary>
