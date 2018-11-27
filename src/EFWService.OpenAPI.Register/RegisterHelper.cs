@@ -22,10 +22,15 @@ namespace EFWService.OpenAPI.Register
         public static async Task RegisterAsync(string basePath, string env)
         {
             var meta = WebBaseUtil.ApiMethodMetaCache;
+            //net core版本读取appsetting.json中的ProjectName
+            //framwrok 版本读取appsetting下的ProjectName
+            //要事先申请，不然注册会失败
+            string groupName = "";
             var obj = new
             {
                 path = basePath,
                 env = env,
+                groupName = groupName,
                 meta = meta
             };
             string json = JsonConvertExd.SerializeObject(obj);

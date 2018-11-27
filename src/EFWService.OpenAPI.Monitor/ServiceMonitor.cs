@@ -6,7 +6,17 @@ using System.Threading.Tasks;
 
 namespace EFWService.OpenAPI.Monitor
 {
-    public class ServiceMonitor
+    internal class ServiceMonitor : DefaultApiExecuteAround
     {
+
+        public override void Before(BeforeParam param)
+        {
+            base.Before(param);
+        }
+
+        public override void After(AfterParam param)
+        {
+            base.After(param);
+        }
     }
 }
