@@ -19,7 +19,7 @@ namespace EFWService.OpenAPI.ExceptionProcess
         {
             HttpException ex = _ex as HttpException;
 
-            string exceptionId = Guid.NewGuid().ToString().Replace("-", "").ToLower();
+            string exceptionId = Guid.NewGuid().ToString("N").ToLower();
             string content = getErrorContent(request, new ApiResponseModelBase()
             {
                 respCode = (int)ApiResultCode.HttpError,

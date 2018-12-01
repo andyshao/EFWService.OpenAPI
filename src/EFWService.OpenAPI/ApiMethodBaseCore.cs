@@ -472,16 +472,9 @@ namespace EFWService.OpenAPI
         /// <param name="apiLogEntity"></param>
         private void SaveLog(ApiLogEntity apiLogEntity)
         {
-            //使用默认日记记录器
             if (WebBaseUtil.ApiLogger == null)
             {
-                lock (syncLock)
-                {
-                    if (WebBaseUtil.ApiLogger == null)
-                    {
-                        WebBaseUtil.ApiLogger = new GenericLogger();
-                    }
-                }
+                return;
             }
             WebBaseUtil.ApiLogger.Log(apiLogEntity);
         }

@@ -40,8 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="APIMonitor.cs" />
     <Compile Include="ServiceMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EFWService.OpenAPI\EFWService.OpenAPI.csproj">
+      <Project>{4bbbb3f4-558e-4439-8daf-826ae413183e}</Project>
+      <Name>EFWService.OpenAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -18,6 +18,7 @@ namespace EFWService.OpenAPI.ExceptionProcess
             where ResponseModelType : ApiResponseModelBase
         {
             string content = string.Empty;
+            apiLogEntity.LogType = LogType.Error;
             if (ex is ApiException)
             {
                 content = new ApiExceptionProcess<RequestModelType, ResponseModelType>().Process(getErrorContent, ex, request, apiLogEntity);

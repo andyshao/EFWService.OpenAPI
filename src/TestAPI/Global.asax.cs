@@ -1,4 +1,5 @@
 ﻿using EFWService.OpenAPI;
+using EFWService.OpenAPI.Logger;
 using System.Web.Routing;
 
 namespace TestAPI
@@ -7,6 +8,7 @@ namespace TestAPI
     {
         protected void Application_Start()
         {
+            GlobalHost.ApiLogger = new APILogger();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             OpenAPIHelper.Init();
         }

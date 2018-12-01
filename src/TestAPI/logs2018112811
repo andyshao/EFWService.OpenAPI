@@ -1,0 +1,14 @@
+﻿2018-11-28 11:29:47.530 Info [WelCome][Home][Index][][]Home.WelCome.Index（欢迎首页）
+返回参数:
+  {"message":"WelCome to OpenAPI!"}
+Url:/
+Method:GET
+ES:130
+CIP:
+2018-11-28 11:33:03.561 Info [Query][MyTest][Test][][]MyTest.Query.Test（测试接口）
+返回参数:
+  {"result":"test","respCode":1000,"respMsg":"获取数据成功","respTime":"2018-11-28 11:33:03.560"}
+Url:/MyTest/query/test
+Method:GET
+ES:7
+CIP:

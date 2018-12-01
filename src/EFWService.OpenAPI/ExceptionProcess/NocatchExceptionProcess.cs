@@ -22,7 +22,7 @@ namespace EFWService.OpenAPI.ExceptionProcess
         public string Process(Func<RequestModelType, ApiResponseModelBase, Exception, string> getErrorContent, 
             Exception _ex, RequestModelType request, ApiLogEntity apiLogEntity)
         {
-            string exceptionId = Guid.NewGuid().ToString().Replace("-", "").ToLower();
+            string exceptionId = Guid.NewGuid().ToString("N").ToLower();
             string content = getErrorContent(request, new ApiResponseModelBase()
                {
                    respCode = (int)ApiResultCode.SystemError,
@@ -32,7 +32,5 @@ namespace EFWService.OpenAPI.ExceptionProcess
             apiLogEntity.ExceptionId = exceptionId;
             return content;
         }
-
-
     }
 }

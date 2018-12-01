@@ -389,6 +389,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\EFWService.OpenAPI.Logger\EFWService.OpenAPI.Logger.csproj">
+      <Project>{f8d562a2-8e11-479b-80eb-c844ba43764a}</Project>
+      <Name>EFWService.OpenAPI.Logger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EFWService.OpenAPI.Models\EFWService.OpenAPI.Model.csproj">
       <Project>{406C9583-26DB-4A60-B794-C7E504B2A591}</Project>
       <Name>EFWService.OpenAPI.Model</Name>
