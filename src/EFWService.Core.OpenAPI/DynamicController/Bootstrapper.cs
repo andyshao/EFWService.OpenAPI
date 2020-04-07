@@ -13,7 +13,7 @@ using System.Text;
 
 namespace EFWService.Core.OpenAPI.DynamicController
 {
-    internal static class Bootstrapper
+    internal class Bootstrapper
     {
         /// <summary>
         /// 初始化
@@ -142,19 +142,14 @@ namespace EFWService.Core.OpenAPI.DynamicControllers
                         foreach (var btgaInt in type.BaseType.GetGenericArguments())
                         {
                             var typeNow = btgaInt;
-                            for (int i = 0; i < 10; i++)
+                            while (typeNow != null)
                             {
-                                if (typeNow != null && typeNow == typeof(ApiRequestModelBase))
+                                if (typeNow == typeof(ApiRequestModelBase))
                                 {
                                     obj.IApiRequestModelType = btgaInt;
+                                    break;
                                 }
-                                else
-                                {
-                                    if (typeNow != null)
-                                    {
-                                        typeNow = typeNow.BaseType;
-                                    }
-                                }
+                                typeNow = typeNow.BaseType;
                             }
                         }
                         //确定是否需要反序列化
@@ -207,17 +202,18 @@ namespace EFWService.Core.OpenAPI.DynamicControllers
         /// <returns></returns>
         private static bool BaseApiCheck(Type x)
         {
-            bool isApiMethodBase = x.BaseType != null && x.BaseType.FullName != null && x.BaseType.FullName.ToLower().StartsWith("EFWService.Core.OpenAPI.ApiMethodBase`2".ToLower());
-            bool isRightBaseType = false;
-            try
-            {
-                isRightBaseType = x.BaseType.Name == "ApiMethodBase`2";
-            }
-            catch (Exception)
-            {
+            return x.BaseType != null && x.BaseType.Name == typeof(ApiMethodBase<,>).Name;
+            //bool isApiMethodBase = x.BaseType != null && x.BaseType.FullName != null && x.BaseType.FullName.ToLower().StartsWith("EFWService.Core.OpenAPI.ApiMethodBase`2".ToLower());
+            //bool isRightBaseType = false;
+            //try
+            //{
+            //    isRightBaseType = x.BaseType.Name == "ApiMethodBase`2";
+            //}
+            //catch (Exception)
+            //{
 
-            }
-            return isApiMethodBase || isRightBaseType;
+            //}
+            //return isApiMethodBase || isRightBaseType;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTest", "UnitTest", "{EC1D4813-957D-45C2-8187-DF095AF455B5}"
 EndProject
@@ -34,6 +34,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFWService.OpenAPI.Monitor", "EFWService.OpenAPI.Monitor\EFWService.OpenAPI.Monitor.csproj", "{66CBB9C7-F36C-473F-B0D1-5B257E99E8B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFWService.OpenAPI.Logger", "EFWService.OpenAPI.Logger\EFWService.OpenAPI.Logger.csproj", "{F8D562A2-8E11-479B-80EB-C844BA43764A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NoMvc", "NoMvc", "{C97CA66A-7CD3-4A1A-BE1F-A13607FF4A7C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EFWService.Route", "EFWService.Route\EFWService.Route.csproj", "{519C19B4-4903-4C27-A630-225B16D80AB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +85,10 @@ Global
 		{F8D562A2-8E11-479B-80EB-C844BA43764A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8D562A2-8E11-479B-80EB-C844BA43764A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8D562A2-8E11-479B-80EB-C844BA43764A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{519C19B4-4903-4C27-A630-225B16D80AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{519C19B4-4903-4C27-A630-225B16D80AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{519C19B4-4903-4C27-A630-225B16D80AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{519C19B4-4903-4C27-A630-225B16D80AB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +104,7 @@ Global
 		{F61229C1-2088-4738-B0E0-4AEF1A2B5F04} = {EAE3493A-62BF-48ED-994B-9009A3046A73}
 		{66CBB9C7-F36C-473F-B0D1-5B257E99E8B5} = {EAE3493A-62BF-48ED-994B-9009A3046A73}
 		{F8D562A2-8E11-479B-80EB-C844BA43764A} = {21DCB258-EE93-4DDA-81A4-0D83E4615FE6}
+		{519C19B4-4903-4C27-A630-225B16D80AB0} = {C97CA66A-7CD3-4A1A-BE1F-A13607FF4A7C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6EB9EFEF-B280-434C-8FC6-7E830809E876}
