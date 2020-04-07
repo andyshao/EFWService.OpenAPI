@@ -10,30 +10,22 @@ using System.Threading.Tasks;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace TestAPI.Core
 {
     public class Startup
     {
-        public IConfigurationRoot Configuration;
-        public Startup()
-        {
-            var builder = new ConfigurationBuilder().
-                AddJsonFile("appsettings.json", false, true);
-            Configuration = builder.Build();
-
-        }
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOpenAPI();
         }
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            logger.AddConsole();
             app.UseOpenAPI();
         }
     }

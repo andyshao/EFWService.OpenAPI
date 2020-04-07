@@ -33,7 +33,7 @@ namespace EFWService.Core.OpenAPI.DynamicController
             });
             foreach (var type in ass.GetTypes())
             {
-                if (typeof(Controller).IsAssignableFrom(type) && type != typeof(Controller))
+                if (typeof(ControllerBase).IsAssignableFrom(type) && type != typeof(ControllerBase))
                 {
                     builder.Services.TryAddTransient(type, type);
                 }
@@ -70,24 +70,25 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using EFWService.Core.OpenAPI.Models;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace EFWService.Core.OpenAPI.DynamicControllers
 {{
     [Route(" + $"\"api/{controller.FirstOrDefault().Module.Trim()}/{controller.FirstOrDefault().Category.Trim()}/[action]\"" + ")]" +
-    @"public class {0}Controller : Controller
+    @"public class {0}Controller : ControllerBase
     {{
      ", controller.Key);
                 #region 构建Action
                 foreach (var c in controller)
                 {
-                    code.AppendFormat(@"public dynamic {0}({1} requestModel)", c.MethodName, c.IApiRequestModelType.FullName);
+                    code.AppendFormat(@"public Task<string> {0}({1} requestModel)", c.MethodName, c.IApiRequestModelType.FullName);
                     code.AppendFormat(@"
         {{
             var method = new {0}();
             method.HttpRequest = base.HttpContext.Request;
             method.HttpResponse = base.HttpContext.Response;
             method.SuperContext = this;
-            return method.Execute(requestModel);
+            return  Task.FromResult(method.Execute(requestModel));
         }}", c.TypeName);
                 }
                 #endregion

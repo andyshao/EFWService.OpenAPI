@@ -9,9 +9,12 @@ using EFWService.Core.OpenAPI.Utils;
 
 namespace EFWService.Core.OpenAPI
 {
+    /// <summary>
+    /// 全局配置数据
+    /// </summary>
     public class GlobalHost
     {
 
-       
+
     }
 }

@@ -32,12 +32,12 @@ namespace EFWService.Core.OpenAPI.DynamicController
                 return CSharpSyntaxTree.ParseText(x,
                     CSharpParseOptions.Default.WithPreprocessorSymbols("NETCORE"));
             }).ToArray();
+
             var option = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, optimizationLevel: OptimizationLevel.Release, allowUnsafe: true);
             CSharpCompilation compilation = CSharpCompilation.Create("OpenAPI.DynamicController.dll")
                 .AddReferences(references)
                 .AddSyntaxTrees(syntaxTrees)
                 .WithOptions(option);
-
             using (var ms = new MemoryStream())
             {
                 EmitResult result = compilation.Emit(ms);
