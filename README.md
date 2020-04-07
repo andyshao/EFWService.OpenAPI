@@ -3,7 +3,7 @@
 
 Author: cgymy  
 
-Contact us: cgyqu2639@163.com
+Contact me: cgyqu2639@163.com
 
 #### Features
 
